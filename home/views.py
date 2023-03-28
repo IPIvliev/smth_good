@@ -6,5 +6,14 @@ from django.http import HttpResponse
 def index(request):
 
     # Page from the theme 
-    # return render(request, 'pages/dashboard.html')
-    return render(request, 'home/index.html')
+    return render(request, 'pages/dashboard.html')
+    # return render(request, 'home/index.html')
+
+def agreements(request):
+  return render(request, 'pages/agreements.html')
+
+def acts(request):
+  return render(request, 'pages/acts.html')
+
+def reports(request):
+  return render(request, 'pages/reports.html')
