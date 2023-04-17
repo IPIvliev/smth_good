@@ -1,5 +1,5 @@
 {% extends "layouts/base.html" %}
-{% load i18n static %}
+{% load i18n static more_tags %}
 
 {% block title %} Home {% endblock title %}
 
@@ -21,174 +21,56 @@
                 <thead>
                   <tr>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Название</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Инициатор</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Заказчик</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Направление</th>
-                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Адресат</th>
+                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Исполнитель</th>
                     <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Статус</th>
                     <th class="text-secondary opacity-7"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td class="align-middle">
-                      <div class="d-flex px-2 py-1">
-                        <h6 class="mb-0 text-sm">О передачи материальных ценностей</h6>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-2.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
+                  {% for agreement in agreements %}
+                    <tr>
+                      <td class="align-middle">
+                        <div class="d-flex px-2 py-1">
+                          <h6 class="mb-0 text-sm">{{ agreement.name }}</h6>
                         </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Игорь Иванов</p>
-                          <p class="text-xs text-secondary mb-0">Технический отдел</p>
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="{{ agreement.customer.userprofile.avatar.url }}" class="avatar avatar-sm me-3" alt="user1">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <p class="text-xs font-weight-bold mb-0">{{ agreement.customer.username }}</p>
+                            <p class="text-xs text-secondary mb-0">{{ agreement.customer.groups.all.0 }}</p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-success">>>>></span>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-4.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
+                      </td>
+                      <td class="align-middle text-center">
+                        {% accessory request.user agreement.customer %}
+                      </td>
+                      <td class="align-middle text-center text-sm">
+                        <div class="d-flex px-2 py-1">
+                          <div>
+                            <img src="{{ agreement.executor.userprofile.avatar.url }}" class="avatar avatar-sm me-3" alt="user1">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center">
+                            <p class="text-xs font-weight-bold mb-0">{{ agreement.executor.username }}</p>
+                            <p class="text-xs text-secondary mb-0">{{ agreement.executor.groups.all.0 }}</p>
+                          </div>
                         </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Дмитрий Фраерман</p>
-                          <p class="text-xs text-secondary mb-0">Юридический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-success">Активно</span>
-                    </td>
-                    <td class="align-middle">
-                      <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                        Изменить
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="align-middle">
-                      <div class="d-flex px-2 py-1">
-                        <h6 class="mb-0 text-sm">Разработка сайта</h6>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-2.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Игорь Иванов</p>
-                          <p class="text-xs text-secondary mb-0">Технический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-success">>>>></span>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-3.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Анатолий Петров</p>
-                          <p class="text-xs text-secondary mb-0">Логистический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-secondary">Окончено</span>
-                    </td>
-                    <td class="align-middle">
-                      <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                        Изменить
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="align-middle">
-                      <div class="d-flex px-2 py-1">
-                        <h6 class="mb-0 text-sm">Обновление клиента</h6>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-2.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Игорь Иванов</p>
-                          <p class="text-xs text-secondary mb-0">Технический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-success">>>>></span>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-3.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Анатолий Петров</p>
-                          <p class="text-xs text-secondary mb-0">Логистический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-warning">Отклонено</span>
-                    </td>
-                    <td class="align-middle">
-                      <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                        Изменить
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="d-flex px-2 py-1">
-                          <h6 class="mb-0 text-sm">Доставка сервера</h6>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-3.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Анатолий Петров</p>
-                          <p class="text-xs text-secondary mb-0">Логистический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-primary">>>>></span>
-                    </td>
-                    <td class="align-middle text-center text-sm">
-                      <div class="d-flex px-2 py-1">
-                        <div>
-                          <img src="{% static 'img/team-2.jpg' %}" class="avatar avatar-sm me-3" alt="user1">
-                        </div>
-                        <div class="d-flex flex-column justify-content-center">
-                          <p class="text-xs font-weight-bold mb-0">Игорь Иванов</p>
-                          <p class="text-xs text-secondary mb-0">Технический отдел</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="align-middle text-center">
-                      <span class="badge badge-sm bg-gradient-success">Активно</span>
-                    </td>
-                    <td class="align-middle">
-                      <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                        Изменить
-                      </a>
-                    </td>
-                  </tr>
+                      </td>
+                      <td class="align-middle text-center">
+                        {% act_finish agreement.acts.all.0.id %}
+                      </td>
+                      <td class="align-middle">
+                        <a href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                          Изменить
+                        </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>

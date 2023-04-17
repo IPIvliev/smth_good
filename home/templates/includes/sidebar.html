@@ -37,6 +37,14 @@
 
     {% if request.user.is_authenticated %}
       <li class="nav-item">
+        <a class="nav-link " href="{% url 'schemes' %}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-ungroup text-dark text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Схема</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link " href="{% url 'agreements' %}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="ni ni-app text-danger text-sm opacity-10"></i>
@@ -50,6 +58,22 @@
             <i class="ni ni-credit-card text-warning text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Акты</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="{% url 'guides' %}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-credit-card text-warning text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Справочники</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link " href="{% url 'accounting_tables' %}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="ni ni-credit-card text-warning text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Учётные таблицы</span>
         </a>
       </li>
       <li class="nav-item">
