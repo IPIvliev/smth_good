@@ -17,7 +17,11 @@
           </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
-
+              	
+              <canvas id="tutorial" width="1000" height="560" style="border: 1px solid #000000; margin-left: 20px;">
+                Update your browser to support HTML5 Canvas
+              </canvas>
+              
             </div>
           </div>
         </div>
@@ -27,4 +31,125 @@
     {% include 'includes/footer.html' %}
   </div>
 
+  <script type="text/javascript">
+    let ctx = null;
+    let elementClick = null;
+    let x_before;
+    let y_before;
+    let elements = [ // элементы для отрисовки
+        {
+            name: '1',
+            color: 'blue',
+            width: 100,
+            height: 100,
+            top: 20,
+            left: 15
+        },
+        {
+            name: '2',
+            color: 'red',
+            width: 100,
+            height: 100,
+            top: 50,
+            left: 125
+        },
+        {
+            name: '3',
+            color: 'yellow',
+            width: 100,
+            height: 100,
+            top: 150,
+            left: 185
+        },
+        {
+            name: '4',
+            color: 'green',
+            width: 100,
+            height: 100,
+            top: 300,
+            left: 235
+        },
+    ];
+
+
+
+    function releaseMouseButton () { // отпускаем мышку
+        // 5
+        elementClick = null;
+        document.body.style.cursor = 'pointer';
+    }
+
+    function moveRect (event) { // постоянно отрисовываем
+        // 4
+        if (elementClick == null) {return}
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        desplX = x_click - x_before;
+        desplY = y_click - y_before;
+        elementClick.left =  elementClick.left + desplX;
+        elementClick.top = elementClick.top + desplY;
+        x_before = x_click;
+        y_before = y_click;
+        window.requestAnimationFrame(draw);
+    }
+
+    function clickByRect (event) { // отслеживаем клик по элементу
+        // 3
+        let x_click;
+        let y_click;
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        x_before = x_click;
+        y_before = y_click;
+        console.log(x_click);
+        console.log(y_click);
+        elementClick = null;
+
+        elements.forEach ( function (element) {
+
+            x_final = element.left + element.width; // правый край элемента по x
+            y_final = element.top + element.height; // низ края элемента по y
+
+            if ( (x_click > element.left) && (x_click < x_final) && 
+                (y_click > element.top) && (y_click < y_final) ) 
+            {
+                elementClick = element;
+            }
+            
+        });
+    }
+
+    function draw () {
+        // 2
+        canvas = document.getElementById('tutorial');
+            let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+            let width = infoPos.width; // получаем ширину элемента
+            let height = infoPos.height; // получаем ширину высоту
+            ctx.clearRect(0, 0, width, height); // стираем прошлый кадр
+            elements.forEach (function(element){ // отрисовка элемента
+                ctx.fillStyle = element.color;
+                // ctx.fillRect(element.left, element.top, element.width, element.height);
+                ctx.strokeRect(element.left, element.top, "100", "40")
+            });
+    }
+
+    function initialization() { // точка входа
+        // 1
+        canvas = document.getElementById('tutorial'); // Получаем тэг Канвас
+        canvas.addEventListener('mousedown', clickByRect);
+        canvas.addEventListener('mousemove', moveRect);
+        canvas.addEventListener('mouseup', releaseMouseButton);
+        if (canvas.getContext) { // проверка
+            ctx = canvas.getContext('2d');
+            draw();
+        }
+    }
+
+    initialization();
+  </script>
+
   {% endblock content %}
+
+
