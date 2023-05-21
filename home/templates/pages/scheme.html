@@ -20,7 +20,9 @@
               	
               <canvas id="tutorial" width="1000" height="560" style="border: 1px solid #000000; margin-left: 20px;">
                 Update your browser to support HTML5 Canvas
+                
               </canvas>
+              <button id="addElement">Добавить элемент</button>
               
             </div>
           </div>
@@ -148,6 +150,21 @@
     }
 
     initialization();
+
+    let car = {
+      name: '4',
+      color: 'green',
+      width: 100,
+      height: 100,
+      top: 100,
+      left: 0
+    }
+
+    var button = document.getElementById('addElement');
+    button.addEventListener("click", function() {
+      elements.push(car)
+      initialization();
+    });
   </script>
 
   {% endblock content %}
