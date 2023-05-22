@@ -21,10 +21,11 @@
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0" id="ex2-common-parent">
               	
-              <canvas id="tutorial" width="1000" height="560" style="border: 1px solid #000000; margin-left: 20px;">
+              <canvas id="tutorial" width="1480" height="560" style="border: 1px solid #000000; margin-left: 20px;">
                 Update your browser to support HTML5 Canvas
                 
               </canvas>
+              <br>
               <button id="addElement">Добавить элемент</button>
 
             </div>
@@ -49,8 +50,8 @@
             color: 'blue',
             width: 100,
             height: 100,
-            top: 20,
-            left: 15,
+            left: 310,
+            top: 35,            
         },
         {
             name: 'arrow1',
@@ -58,10 +59,6 @@
             start: 'name1',
             finish: 'name2',
             color: 'blue',
-            width: 100,
-            height: 100,
-            top: 20,
-            left: 15,
         },
         {
             name: 'name2',
@@ -69,26 +66,40 @@
             color: 'red',
             width: 100,
             height: 100,
-            top: 50,
-            left: 125,
+            left: 310,
+            top: 220,    
         },
         {
-            name: '3',
+            name: 'arrow3',
+            style: 'arrow',
+            start: 'name2',
+            finish: 'name3',
+            color: 'blue',
+        },
+        {
+            name: 'name3',
             style: 'rect',
             color: 'yellow',
             width: 100,
             height: 100,
-            top: 150,
-            left: 185,
+            left: 180,
+            top: 420,    
         },
         {
-            name: '4',
+            name: 'arrow4',
+            style: 'arrow',
+            start: 'name2',
+            finish: 'name4',
+            color: 'blue',
+        },
+        {
+            name: 'name4',
             style: 'rect',
             color: 'green',
             width: 100,
             height: 100,
-            top: 300,
-            left: 235,
+            left: 430,
+            top: 420,    
         },
     ];
 
@@ -151,27 +162,42 @@
             let width = infoPos.width; // получаем ширину элемента
             let height = infoPos.height; // получаем ширину высоту
             ctx.clearRect(0, 0, width, height); // стираем прошлый кадр
+            ctx.beginPath();
             elements.forEach (function(element){ // отрисовка элемента
 
                 if (element.style === 'rect') {
-                  ctx.fillStyle = element.color;
-                  // ctx.fillRect(element.left, element.top, element.width, element.height);
-                  ctx.strokeRect(element.left, element.top, element.width, element.height)
-                  ctx.className = element.name;
-                } else {
+                  
                   ctx.fillStyle = element.color;
                   ctx.strokeStyle = element.color;
+                  ctx.lineWidth = 1;
+
+                  ctx.fillRect(element.left, element.top, element.width, element.height);
+                  ctx.fillStyle = 'white';
+                  ctx.fillRect(element.left+10, element.top+10, element.width-20, element.height-20);
+                  ctx.font = "italic 18pt Arial";
+                  ctx.fillStyle = 'black';
+                  ctx.textBaseline = 'middle';
+                  ctx.textAlign = "center";
+                  ctx.fillText(element.name, element.left+element.width/2, element.top+element.height/2);
+                  // ctx.arc(element.left+element.width/2, element.top+element.height, 25, 0, 2 * Math.PI, false);
+                  
+                  // console.log(ctx.fillStyle)
+                  // ctx.fill()
+                } else {
+                  // ctx.fillStyle = element.color;
+                  ctx.strokeStyle = element.color; // цвет линии
+                  ctx.lineWidth = 2; // толщина линии
 
                   arrowStart = element.start;
-                  console.log("Arrow start is " + arrowStart);
                   arrowFinish = element.finish;
-                  console.log("Arrow finish is " + arrowFinish);
 
+                  newArray = elements.filter(arElement => arElement.name === arrowStart);
                   elements.map(function (rect) {
                     if (rect.name === arrowStart) {
                       
-                      console.log("Found!");
                       ctx.moveTo(rect.left + rect.width/2, rect.top + rect.height + 10);
+                      fromx = rect.left + rect.width/2;
+                      fromy = rect.top + rect.height + 10
                       
                     } else {
 
@@ -182,16 +208,30 @@
 
                   elements.map(function (rect) {
                     if (rect.name === arrowFinish) {
-                        
-                        console.log("Finish Found!");
+
                         ctx.lineTo(rect.left + rect.width/2, rect.top - 10);
-                        
+                        tox = rect.left + rect.width/2;
+                        toy = rect.top - 10;
+
+                        var dx = rect.left + rect.width/2 - fromx;
+                        var dy = rect.top - 10 - fromy;
+                        var angle = Math.atan2(dy, dx)
+
+                        ctx.lineTo(rect.left + rect.width/2 - 10 * Math.cos(angle - Math.PI / 6), rect.top - 10 -10 * Math.sin(angle - Math.PI / 6));
+                        ctx.moveTo(rect.left + rect.width/2, rect.top - 10);
+                        ctx.lineTo(rect.left + rect.width/2 - 10 * Math.cos(angle + Math.PI / 6), rect.top - 10 - 10 * Math.sin(angle + Math.PI / 6));
                       } else {
                         return null
                       }
                   });
                  
                   ctx.stroke();
+
+                  ctx.font = "italic 18pt Arial";
+                  ctx.fillStyle = 'black';
+                  ctx.textBaseline = 'middle';
+                  ctx.textAlign = "center";
+                  ctx.fillText(element.name, tox, toy);
                 }
             });
     }
@@ -220,12 +260,23 @@
       left: 0
     }
 
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+
     var button = document.getElementById('addElement');
     button.addEventListener("click", function() {
+      amount = elements.filter(arElement => arElement.style === 'rect');
       elements.push({
-      name: '4',
+      name: amount.length + 1,
       style: 'rect',
-      color: 'green',
+      color: getRandomColor(),
       width: 100,
       height: 100,
       top: 100,
