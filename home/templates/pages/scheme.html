@@ -8,24 +8,27 @@
 {% endblock overlay %}
 
 {% block content %}
-
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+  <script type="text/javascript" src="https://michael.verhov.com/content/files/canvas_arrows_for_div/arrows.1.0.0.js"></script>
   <div class="container-fluid py-4">
     <div class="row">
       <div class="col-12">
-        <div class="card mb-4" style="height: 640px;">
+        <div class="card mb-4" style="height: 1040px;">
           <div class="card-header pb-0">
             <h6>Схема предприятия</h6>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
-            <div class="table-responsive p-0">
+            <div class="table-responsive p-0" id="ex2-common-parent">
               	
               <canvas id="tutorial" width="1000" height="560" style="border: 1px solid #000000; margin-left: 20px;">
                 Update your browser to support HTML5 Canvas
                 
               </canvas>
               <button id="addElement">Добавить элемент</button>
-              
+
             </div>
+
           </div>
         </div>
       </div>
@@ -33,7 +36,7 @@
 
     {% include 'includes/footer.html' %}
   </div>
-  <script type="text/javascript" src="https://michael.verhov.com/content/files/canvas_arrows_for_div/arrows.1.0.0.js"></script>
+
   <script type="text/javascript">
     let ctx = null;
     let elementClick = null;
@@ -42,35 +45,50 @@
     let elements = [ // элементы для отрисовки
         {
             name: 'name1',
+            style: 'rect',
             color: 'blue',
             width: 100,
             height: 100,
             top: 20,
-            left: 15
+            left: 15,
+        },
+        {
+            name: 'arrow1',
+            style: 'arrow',
+            start: 'name1',
+            finish: 'name2',
+            color: 'blue',
+            width: 100,
+            height: 100,
+            top: 20,
+            left: 15,
         },
         {
             name: 'name2',
+            style: 'rect',
             color: 'red',
             width: 100,
             height: 100,
             top: 50,
-            left: 125
+            left: 125,
         },
         {
             name: '3',
+            style: 'rect',
             color: 'yellow',
             width: 100,
             height: 100,
             top: 150,
-            left: 185
+            left: 185,
         },
         {
             name: '4',
+            style: 'rect',
             color: 'green',
             width: 100,
             height: 100,
             top: 300,
-            left: 235
+            left: 235,
         },
     ];
 
@@ -114,11 +132,13 @@
 
             x_final = element.left + element.width; // правый край элемента по x
             y_final = element.top + element.height; // низ края элемента по y
+            
 
             if ( (x_click > element.left) && (x_click < x_final) && 
                 (y_click > element.top) && (y_click < y_final) ) 
             {
                 elementClick = element;
+                console.log(element.name);
             }
             
         });
@@ -132,10 +152,47 @@
             let height = infoPos.height; // получаем ширину высоту
             ctx.clearRect(0, 0, width, height); // стираем прошлый кадр
             elements.forEach (function(element){ // отрисовка элемента
-                ctx.fillStyle = element.color;
-                // ctx.fillRect(element.left, element.top, element.width, element.height);
-                ctx.strokeRect(element.left, element.top, "100", "40")
-                ctx.className = element.name;
+
+                if (element.style === 'rect') {
+                  ctx.fillStyle = element.color;
+                  // ctx.fillRect(element.left, element.top, element.width, element.height);
+                  ctx.strokeRect(element.left, element.top, element.width, element.height)
+                  ctx.className = element.name;
+                } else {
+                  ctx.fillStyle = element.color;
+                  ctx.strokeStyle = element.color;
+
+                  arrowStart = element.start;
+                  console.log("Arrow start is " + arrowStart);
+                  arrowFinish = element.finish;
+                  console.log("Arrow finish is " + arrowFinish);
+
+                  elements.map(function (rect) {
+                    if (rect.name === arrowStart) {
+                      
+                      console.log("Found!");
+                      ctx.moveTo(rect.left + rect.width/2, rect.top + rect.height + 10);
+                      
+                    } else {
+
+                      return null
+                    }
+
+                  });
+
+                  elements.map(function (rect) {
+                    if (rect.name === arrowFinish) {
+                        
+                        console.log("Finish Found!");
+                        ctx.lineTo(rect.left + rect.width/2, rect.top - 10);
+                        
+                      } else {
+                        return null
+                      }
+                  });
+                 
+                  ctx.stroke();
+                }
             });
     }
 
@@ -155,6 +212,7 @@
 
     let car = {
       name: '4',
+      style: 'rect',
       color: 'green',
       width: 100,
       height: 100,
@@ -164,13 +222,19 @@
 
     var button = document.getElementById('addElement');
     button.addEventListener("click", function() {
-      elements.push(car)
+      elements.push({
+      name: '4',
+      style: 'rect',
+      color: 'green',
+      width: 100,
+      height: 100,
+      top: 100,
+      left: 0
+    })
       initialization();
     });
 
-    var arrowsDrawer3 = $cArrows('#tutorial', { render:{lineWidth: 3, strokeStyle: '#992E2E'}});
-    arrowsDrawer3.arrow('name1', 'name2', {arrow: {arrowType:'double-headed'}, render: {strokeStyle:'#617783'}});
-  </script>
+</script>
 
   {% endblock content %}
 
