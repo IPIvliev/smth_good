@@ -103,12 +103,31 @@
         },
     ];
 
+    function moveMouseOver(event) {
 
+      let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+      rects = elements.filter(arElement => arElement.style == 'rect');
+
+
+      rects.map(function (el) {
+      // rects.forEach ( function (el) {
+        x_move = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_move = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        if ( (x_move > el.left) && (x_move < el.left + el.width) && (y_move > el.top) && (y_move < el.top + el.height) ) {
+          document.body.style.cursor = 'pointer';
+
+        } else {
+          document.body.style.cursor = 'default';
+        }
+      });
+
+
+    };
 
     function releaseMouseButton () { // отпускаем мышку
         // 5
         elementClick = null;
-        document.body.style.cursor = 'pointer';
+        // document.body.style.cursor = 'pointer';
     }
 
     function moveRect (event) { // постоянно отрисовываем
@@ -165,7 +184,7 @@
             ctx.beginPath();
             elements.forEach (function(element){ // отрисовка элемента
 
-                if (element.style === 'rect') {
+                if (element.style == 'rect') {
                   
                   ctx.fillStyle = element.color;
                   ctx.strokeStyle = element.color;
@@ -174,17 +193,33 @@
                   ctx.fillRect(element.left, element.top, element.width, element.height);
                   ctx.fillStyle = 'white';
                   ctx.fillRect(element.left+10, element.top+10, element.width-20, element.height-20);
+                  
                   ctx.font = "italic 18pt Arial";
                   ctx.fillStyle = 'black';
                   ctx.textBaseline = 'middle';
                   ctx.textAlign = "center";
                   ctx.fillText(element.name, element.left+element.width/2, element.top+element.height/2);
-                  // ctx.arc(element.left+element.width/2, element.top+element.height, 25, 0, 2 * Math.PI, false);
                   
+                  ctx.beginPath();
+                  ctx.fillStyle = 'white'
+                  ctx.strokeStyle = 'blue'
+                  ctx.arc(element.left+element.width/2, element.top, 5, 0, 360, false);
+                  ctx.fill();
+                  ctx.stroke();
+
+                  ctx.beginPath();
+                  ctx.fillStyle = 'white'
+                  ctx.strokeStyle = 'blue'
+                  ctx.moveTo(element.left+element.width/2, element.top+element.height);
+                  ctx.arc(element.left+element.width/2, element.top+element.height, 5, 0, 360, false);
+                  ctx.fill();
+                  ctx.stroke();
+
                   // console.log(ctx.fillStyle)
                   // ctx.fill()
                 } else {
                   // ctx.fillStyle = element.color;
+                  ctx.beginPath();
                   ctx.strokeStyle = element.color; // цвет линии
                   ctx.lineWidth = 2; // толщина линии
 
@@ -224,7 +259,8 @@
                         return null
                       }
                   });
-                 
+
+                  ctx.moveTo(tox, toy);
                   ctx.stroke();
 
                   ctx.font = "italic 18pt Arial";
@@ -241,6 +277,7 @@
         canvas = document.getElementById('tutorial'); // Получаем тэг Канвас
         canvas.addEventListener('mousedown', clickByRect);
         canvas.addEventListener('mousemove', moveRect);
+        canvas.addEventListener('mousemove', moveMouseOver);
         canvas.addEventListener('mouseup', releaseMouseButton);
         if (canvas.getContext) { // проверка
             ctx = canvas.getContext('2d');
@@ -282,7 +319,7 @@
       top: 100,
       left: 0
     })
-      initialization();
+      window.requestAnimationFrame(draw);
     });
 
 </script>
