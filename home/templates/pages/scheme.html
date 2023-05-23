@@ -27,7 +27,7 @@
               </canvas>
               <br>
               <button id="addElement">Добавить элемент</button>
-
+              <input id="addName"></input>
             </div>
 
           </div>
@@ -43,94 +43,101 @@
     let elementClick = null;
     let x_before;
     let y_before;
+    let arrayCircles = [];
     let elements = [ // элементы для отрисовки
         {
-            name: 'name1',
-            style: 'rect',
-            color: 'blue',
-            width: 100,
-            height: 100,
-            left: 310,
-            top: 35,            
+          id: 1,
+          name: 'name1',
+          style: 'rect',
+          color: 'blue',
+          width: 200,
+          height: 100,
+          left: 310,
+          top: 35,            
         },
         {
-            name: 'name2',
-            style: 'rect',
-            color: 'red',
-            width: 100,
-            height: 100,
-            left: 310,
-            top: 220,    
+          id: 2,
+          name: 'name2',
+          style: 'rect',
+          color: 'red',
+          width: 200,
+          height: 100,
+          left: 310,
+          top: 220,    
         },
         {
-            name: 'name3',
-            style: 'rect',
-            color: 'yellow',
-            width: 100,
-            height: 100,
-            left: 180,
-            top: 420,    
+          id: 3,
+          name: 'name3',
+          style: 'rect',
+          color: 'yellow',
+          width: 200,
+          height: 100,
+          left: 180,
+          top: 420,    
         },
         {
-            name: 'name4',
-            style: 'rect',
-            color: 'green',
-            width: 100,
-            height: 100,
-            left: 430,
-            top: 420,    
+          id: 4,
+          name: 'name4',
+          style: 'rect',
+          color: 'green',
+          width: 200,
+          height: 100,
+          left: 430,
+          top: 420,    
         },
         {
-            name: 'name5',
-            style: 'rect',
-            color: 'black',
-            width: 100,
-            height: 100,
-            left: 620,
-            top: 140,    
+          id: 5,
+          name: 'name5',
+          style: 'rect',
+          color: 'black',
+          width: 200,
+          height: 100,
+          left: 620,
+          top: 140,    
         },
         {
-            name: 'name6',
-            style: 'rect',
-            color: 'pink',
-            width: 100,
-            height: 100,
-            left: 620,
-            top: 340,    
+          id: 6,
+          name: 'name6',
+          style: 'rect',
+          color: 'pink',
+          width: 200,
+          height: 100,
+          left: 620,
+          top: 340,    
         },
         {
             name: 'arrow1',
             style: 'arrow',
-            start: 'name1',
-            finish: 'name2',
+            start: '1',
+            finish: '2',
             color: 'blue',
         },
         {
             name: 'arrow2',
             style: 'arrow',
-            start: 'name1',
-            finish: 'name2',
+            start: '1',
+            finish: '2',
             color: 'blue',
         },
         {
             name: 'arrow3',
             style: 'arrow',
-            start: 'name2',
-            finish: 'name3',
+            start: '2',
+            finish: '3',
             color: 'blue',
         },
         {
             name: 'arrow4',
             style: 'arrow',
-            start: 'name2',
-            finish: 'name4',
+            start: '2',
+            finish: '4',
             color: 'blue',
         },
         {
             name: 'arrow5',
             style: 'arrow',
-            start: 'name5',
-            finish: 'name6',
+            start: '5',
+            finish: '6',
             color: 'blue',
         },
 
@@ -237,6 +244,82 @@
         });
     }
 
+    function clickTextEdit () { // отслеживаем клик по элементу
+        // 3
+        let x_click;
+        let y_click;
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        x_before = x_click;
+        y_before = y_click;
+
+        elementClick = null;
+
+        var text = document.getElementById('addName'); // действие при нажатии на кнопку Добавить
+
+        elements.forEach ( function (element) {
+
+            x_final = element.left + element.width; // правый край элемента по x
+            y_final = element.top + element.height; // низ края элемента по y
+            
+
+            if ( (x_click > element.left) && (x_click < x_final) && 
+                (y_click > element.top) && (y_click < y_final) )
+            {
+                ctx.clearRect(element.left + 10,element.top + 10 , element.width -20 ,element.height-20);
+                ctx.font = "italic 18pt Arial";
+                ctx.fillStyle = 'black';
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = "center";
+                ctx.fillText(text.value, element.left+element.width/2, element.top+element.height/2);
+                
+                // const newPosts = elements.map((element) => (
+                //   element.name === "name4"
+                //     ? { ...element, text: 'other text' }
+                //     : element
+                // ));
+                
+                element.name = text.value
+                window.requestAnimationFrame(draw);
+            }
+            
+        });
+    }
+
+    function deleteElement () {
+        let x_click;
+        let y_click;
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        x_before = x_click;
+        y_before = y_click;
+
+        elementClick = null;
+
+        var text = document.getElementById('addName'); // действие при нажатии на кнопку Добавить
+
+        elements.forEach ( function (element) {
+
+            x_final = element.left + element.width; // правый край элемента по x
+            y_final = element.top + element.height; // низ края элемента по y
+            
+
+            if ( (x_click > element.left) && (x_click < x_final) && 
+                (y_click > element.top) && (y_click < y_final) )
+            {
+
+              var index = elements.map(x => {
+                return x.id;
+              }).indexOf(element.id);
+
+              elements.splice(index, 1);
+              window.requestAnimationFrame(draw);
+            }
+          });
+      }
+
     function draw () {
         // 2
         canvas = document.getElementById('tutorial');
@@ -260,7 +343,7 @@
                   ctx.fillRect(element.left+10, element.top+10, element.width-20, element.height-20);
                   // Квадрат белый внутри обводки
                   
-                  ctx.font = "italic 18pt Arial";
+                  ctx.font = "italic 8pt Arial";
                   ctx.fillStyle = 'black';
                   ctx.textBaseline = 'middle';
                   ctx.textAlign = "center";
@@ -268,7 +351,7 @@
 
                   var filter = {
                     style: 'arrow',
-                    start: element.name
+                    start: element.id
                   };
 
                   finishArrows = elements.filter(function(item) {
@@ -278,6 +361,13 @@
                     }
                     return true;
                   });
+
+                  
+                  finishArrows.forEach(function (finishArrow){
+                    arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, type: "startCircle"})
+                  })
+                  
+                  
 
                   switch (finishArrows.length) {
                     case 0:
@@ -311,7 +401,7 @@
 
                   var filter = {
                     style: 'arrow',
-                    finish: element.name
+                    finish: element.id
                   };
 
                   startArrows = elements.filter(function(item) {
@@ -321,6 +411,22 @@
                     }
                     return true;
                   });
+
+                  startArrows.forEach(function (startArrow){
+                    arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, type: "finishCircle"})
+                  })
+
+                  // aC = arrayCircles.filter(item => item.elementId === element.id)
+                  // console.log(aC.length)
+
+                  // i = 0;
+                  // aC.forEach( function (item){
+                  //   if (item.type === "finishCircle") {
+                  //     drawCircle(element.left+element.width/2+i, element.top);
+                  //     i += 14
+                  //   }
+                  // })
+                  // drawCircle(element.left+element.width/2+i, element.top);
 
                   switch (startArrows.length) {
                     case 0:
@@ -342,9 +448,9 @@
                       drawCircle(element.left+element.width/2 + 14, element.top);
                       break;
                     default:
-
                   }
-                  console.log("У элемента "+ element.name + " начальных кругов " + startArrows.length + " и конечных кругов " + finishArrows.length)
+
+                  // console.log("У элемента "+ element.name + " начальных кругов " + startArrows.length + " и конечных кругов " + finishArrows.length)
 
                 } else if (element.style == 'arrow') {
                   // ctx.fillStyle = element.color;
@@ -353,12 +459,37 @@
                   // ctx.strokeStyle = element.color; // цвет линии
                   // ctx.lineWidth = 2; // толщина линии
 
-                  var startElements = elements.filter(arElement => arElement.start === element.start);
-                  var finishElements = elements.filter(arElement => arElement.finish === element.finish);
-                  allElements = elements.filter(arElement => arElement.style === "rect");
+                  var filter = {
+                    style: 'arrow',
+                    start: element.start
+                  };
 
-                  console.log("Стрелка " + element.name + " с началом в " + element.start + " и окончанием в " + element.finish + 
-                    ". Всего startElements " + startElements.length + " и finishElements " + finishElements.length + ". повторений: " + i)
+                  startRects = elements.filter(function(item) {
+                    for (var key in filter) {
+                      if (item[key] === undefined || item[key] != filter[key])
+                        return false;
+                    }
+                    return true;
+                  });
+
+                  var filter = {
+                    style: 'arrow',
+                    finish: element.finish
+                  };
+
+                  finishRects = elements.filter(function(item) {
+                    for (var key in filter) {
+                      if (item[key] === undefined || item[key] != filter[key])
+                        return false;
+                    }
+                    return true;
+                  });
+
+
+                  // allElements = elements.filter(arElement => arElement.style === "rect");
+
+                  // console.log("Стрелка " + element.name + " с началом в " + element.start + " и окончанием в " + element.finish + 
+                    // ". Всего startRects " + startRects.length + " и finishRects " + finishRects.length + ". повторений: " + i)
 
                   // if (startElements.length === 2) {
                   //   if (finishElements.length === 1) {
@@ -373,42 +504,26 @@
                     
                   // }
 
-                  switch (startElements.length) {
-                    case 1:
-                      switch (finishElements.length) {
-                        case 1:
-                          drawArrow(allElements, element.name, element.start, element.finish, -7, -7);
-                          break;
-                        case 2:
-                          drawArrow(allElements, element.name, element.start, element.finish, -7, -14);
-                          break;
-                        default:
-                          alert( 'We hope that this page looks ok!' );
-                      }
-                      break;
-                    case 2:
-                     switch (finishElements.length) {
-                        case 1:
+                  // console.log("Стрелка " + element.name + " Вызвали 5")
 
-                          drawArrow(allElements, element.name, element.start, element.finish, -14, -7);
-                          drawArrow(allElements, element.name, element.start, element.finish, 0, -7);
-                          break;
-                        case 2:
 
-                          drawArrow(allElements, element.name, element.start, element.finish, -14, -14);
-                          drawArrow(allElements, element.name, element.start, element.finish, 0, 0);
-                          break;
-                        default:
-                          alert( 'We hope that this page looks ok!' );
-                      }
-                      break;
-                    case 3:
-                      console.log("Их 3")
-                      break;
-                    default:
-                      alert( 'We hope that this page looks ok!' );
+                  x=0;
 
-                  }
+                  drawArrow(element.name, element.start, element.finish, 0, 0+x);
+
+
+                          
+                  // aC = arrayCircles.filter(item => item.elementId === Number(element.finish))
+
+                  // i = 0;
+                  // aC.forEach( function (item){
+                  //   if (item.type === "finishCircle") {
+                  //     drawArrow(element.name, element.start, element.finish, 0+i, 0+i);
+                  //     i += 14
+                  //   }
+                  // })
+
+   
 
                 }
             });
@@ -425,11 +540,13 @@
       ctx.stroke();
     }
 
-    function drawArrow (allElements, elementName, arrowStart, arrowFinish, positionStart=0, positionFinish=0) {
-      
-      startElement = allElements.find(element => element.name === arrowStart)
-      finishElement = allElements.find(element => element.name === arrowFinish)
-         
+    function drawArrow (elementName, arrowStart, arrowFinish, positionStart=0, positionFinish=0) {
+      // console.log("Рисуем стрелку " + elementName)
+      // console.log("Массив arrayCircles " + arrayCircles.length)
+
+      startElement = elements.find(element => element.id === Number(arrowStart))
+      finishElement = elements.find(element => element.id === Number(arrowFinish))
+
       fromx = startElement.left + startElement.width/2 + positionStart;
       fromy = startElement.top + startElement.height + 10
 
@@ -456,6 +573,7 @@
       ctx.textBaseline = 'middle';
       ctx.textAlign = "center";
       ctx.fillText(elementName, tox+positionFinish*3, toy);
+      // console.log("Нарисовали стрелку " + elementName)
     }
 
     function getRandomColor() {
@@ -471,14 +589,18 @@
     button.addEventListener("click", function() {
       amount = elements.filter(arElement => arElement.style === 'rect');
       elements.push({
-      name: amount.length + 1,
+      id: amount.length + 1,
+      name: document.getElementById('addName').value,
       style: 'rect',
       color: getRandomColor(),
-      width: 100,
+      width: 200,
       height: 100,
       top: 100,
       left: 0
     })
+      arrayCircles.forEach( function (item){
+        console.log(item)
+      })
       window.requestAnimationFrame(draw);
     });
 
@@ -486,6 +608,8 @@
         // 1
         canvas = document.getElementById('tutorial'); // Получаем тэг Канвас
         canvas.addEventListener('mousedown', clickByRect);
+        canvas.addEventListener('dblclick', clickTextEdit);
+        canvas.addEventListener('contextmenu', deleteElement);
         canvas.addEventListener('mousemove', moveRect);
         canvas.addEventListener('mousemove', moveMouseOver);
         // canvas.addEventListener('mousemove', moveMouseOut);
