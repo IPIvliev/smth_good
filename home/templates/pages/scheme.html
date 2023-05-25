@@ -41,6 +41,7 @@
   <script type="text/javascript">
     let ctx = null;
     let elementClick = null;
+    let circleClick = null;
     let x_before;
     let y_before;
     let arrayCircles = [];
@@ -207,7 +208,61 @@
     function releaseMouseButton () { // отпускаем мышку
         // 5
         elementClick = null;
+
+        if (circleClick != null) {
+
+          // Находим точку привязки для окончания стрелки
+          let x_click;
+          let y_click;
+          let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+          x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+          y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+
+          console.log("Отжал кнопку мыши" + x_click);
+          console.log(y_click);
+          // elementClick = null;
+          circleFinish = null;
+
+          arrayCircles.filter(item => item.arrowId === 0).filter(item => item.type === "finishCircle").forEach ( function (circle) {
+
+              x_final = circle.left + 10; // правый край элемента по x
+              y_final = circle.top + 10; // низ края элемента по y
+              
+
+              if ( (x_click > circle.left-10) && (x_click < x_final) && 
+                  (y_click > circle.top-10) && (y_click < y_final) )
+              {
+                circleFinish = circle;
+                // ctx.lineTo(event.offsetX,event.offsetY);
+
+                console.log("Точка окончания " + circleFinish);
+              } else {
+                // alert("No finish point")
+                // circleFinish = null;
+                // console.log("Точка окончания" + circleFinish);
+                // return false;
+              }
+          });
+        
+          // Добавляет в массив новую стрелку
+          if (circleFinish != null) {
+            elements.push({
+              id: elements.length + 1,
+              name: 'arrow',
+              style: 'arrow',
+              start: circleClick.elementId.toString(),
+              finish: circleFinish.elementId,
+              color: 'blue',
+            });
+            console.log(elements)
+          }
+
+          makeCirclesArray(); // Обновляем массив кружков
+          circleClick = null; // Удаляем из памяти информацию о выборе кружка
+        }
+        
         document.body.style.cursor = 'default';
+        window.requestAnimationFrame(draw);
     }
 
     function moveRect (event) { // постоянно отрисовываем при перемещении
@@ -225,20 +280,40 @@
         window.requestAnimationFrame(draw);
     }
 
+    function moveArrow (event) { // рисуем новую стрелку
+        // 4
+        if (circleClick == null) {return}
+        
+        // console.log(event.clientX)
+        // ctx.moveTo(circleClick.left, circleClick.top)
+        // ctx.lineTo(event.clientX, event.clientY)
+        // ctx.stroke();
+        // let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        // x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        // y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        // desplX = x_click - x_before;
+        // desplY = y_click - y_before;
+        // elementClick.left = elementClick.left + desplX;
+        // elementClick.top = elementClick.top + desplY;
+        // x_before = x_click;
+        // y_before = y_click;
+        // window.requestAnimationFrame(draw);
+    }
+
     function clickByBlankCircle (event) { // отслеживаем клик по постому кружку для отрисовки новой стрелки
         // 3
+        
         let x_click;
         let y_click;
         let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
         x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
         y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
-        x_before = x_click;
-        y_before = y_click;
+
         console.log(x_click);
         console.log(y_click);
         // elementClick = null;
 
-        arrayCircles.forEach ( function (circle) {
+        arrayCircles.filter(item => item.arrowId === 0).filter(item => item.type === "startCircle").forEach ( function (circle) {
 
             x_final = circle.left + 10; // правый край элемента по x
             y_final = circle.top + 10; // низ края элемента по y
@@ -247,12 +322,32 @@
             if ( (x_click > circle.left-10) && (x_click < x_final) && 
                 (y_click > circle.top-10) && (y_click < y_final) )
             {
-                // elementClick = element;
-                
-                console.log(circle.arrowId);
+              document.body.style.cursor = 'crosshair';
+              ctx.beginPath();
+              ctx.moveTo(x_click,y_click)
+              
+              circleClick = circle;
+              // ctx.lineTo(event.offsetX,event.offsetY);
+              
+
+              console.log(circle.arrowId);
             }
             
         });
+      // this.onmousemove = function(e){
+      //   console.log("df")
+      //   ctx.lineTo(e.offsetX,e.offsetY);
+      //   ctx.stroke()
+      //   x = e.offsetX;
+      //   y = e.offsetY;
+        
+      // };
+
+      // canvas.onclick = function(e){
+      //   p1.x = e.offsetX;
+      //   p1.y = e.offsetY;
+      //   redraw();
+      // };
     }
 
     function clickByRect (event) { // отслеживаем клик по элементу
@@ -414,7 +509,7 @@
       // console.log(arrayCircles)
     }
 
-    function draw () {
+    function draw (event) {
         // 2
         canvas = document.getElementById('tutorial');
             let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
@@ -507,6 +602,14 @@
                   drawArrow(element.name, element.start, element.finish, 0+circleStart.position, 0+circleFinish.position);
 
                 }
+
+                // if (circleClick != null) {
+                //   console.log("sd")
+                //   ctx.beginPath();
+                //   ctx.moveTo(circleClick.left, circleClick.top);
+                //   ctx.lineTo(event.clickX, event.clickY)
+                //   ctx.stroke();
+                // }
             });
     }
 
@@ -544,12 +647,12 @@
       finishElement = elements.find(element => element.id === Number(arrowFinish))
 
       fromx = startElement.left + startElement.width/2 + positionStart;
-      fromy = startElement.top + startElement.height + 10
+      fromy = startElement.top + startElement.height + 15
 
       ctx.moveTo(fromx, fromy);
       
       tox = finishElement.left + finishElement.width/2 + positionFinish;
-      toy = finishElement.top - 10;
+      toy = finishElement.top - 15;
 
       ctx.lineTo(tox, toy);
 
@@ -637,6 +740,7 @@
       left: 0
     })
       makeCirclesArray();
+      document.getElementById('addName').value = "";
       window.requestAnimationFrame(draw);
     });
 
@@ -645,9 +749,11 @@
         canvas = document.getElementById('tutorial'); // Получаем тэг Канвас
         canvas.addEventListener('mousedown', clickByRect);
         canvas.addEventListener('mousedown', clickByBlankCircle);
+        // canvas.addEventListener('mousedown', clickByBlankCircle).addEventListener('mousemove', );
         canvas.addEventListener('dblclick', clickTextEdit);
         // canvas.addEventListener('contextmenu', deleteElement);
         canvas.addEventListener('mousemove', moveRect);
+        canvas.addEventListener('mousemove', moveArrow);
         // canvas.addEventListener('mousemove', moveMouseOver);
         canvas.addEventListener('mouseup', releaseMouseButton);
 
