@@ -156,10 +156,9 @@
 
     ];
 
-    function moveMouseOver(event) { // отслеживаем наведение курсора на кликабельные элементы
+    function moveMouseOver(event) { // В зависимости от положения курсора меняем его внешний вид
 
       let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
-      // rects = elements.filter(arElement => arElement.style == 'rect');
       x_move = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
       y_move = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
 
@@ -226,6 +225,36 @@
         window.requestAnimationFrame(draw);
     }
 
+    function clickByBlankCircle (event) { // отслеживаем клик по постому кружку для отрисовки новой стрелки
+        // 3
+        let x_click;
+        let y_click;
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        x_before = x_click;
+        y_before = y_click;
+        console.log(x_click);
+        console.log(y_click);
+        // elementClick = null;
+
+        arrayCircles.forEach ( function (circle) {
+
+            x_final = circle.left + 10; // правый край элемента по x
+            y_final = circle.top + 10; // низ края элемента по y
+            
+
+            if ( (x_click > circle.left-10) && (x_click < x_final) && 
+                (y_click > circle.top-10) && (y_click < y_final) )
+            {
+                // elementClick = element;
+                
+                console.log(circle.arrowId);
+            }
+            
+        });
+    }
+
     function clickByRect (event) { // отслеживаем клик по элементу
         // 3
         let x_click;
@@ -256,7 +285,7 @@
         });
     }
 
-    function clickTextEdit () { // отслеживаем клик по элементу
+    function clickTextEdit () { // Добавляем или меняем название на элементе
         // 3
         let x_click;
         let y_click;
@@ -286,13 +315,8 @@
                 ctx.textAlign = "center";
                 ctx.fillText(text.value, element.left+element.width/2, element.top+element.height/2);
                 
-                // const newPosts = elements.map((element) => (
-                //   element.name === "name4"
-                //     ? { ...element, text: 'other text' }
-                //     : element
-                // ));
-                
                 element.name = text.value
+                document.getElementById('addName').value = ""
                 window.requestAnimationFrame(draw);
             }
             
@@ -333,6 +357,9 @@
       }
 
     function makeCirclesArray () {
+      // переопределяем массив с кружками
+      arrayCircles.length = 0;
+
       rectElements = finishArrows = elements.filter(item => item.style === "rect")
 
       rectElements.forEach (function(element){ // отрисовка элемента
@@ -350,11 +377,14 @@
           return true;
         });
 
-        let sPosition = 0
+        let position = 0
         finishArrows.forEach(function (finishArrow){
-          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: finishArrow.id, position: sPosition, type: "startCircle"});
-          sPosition += 14;
+          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: finishArrow.id, position: position, type: "startCircle"});
+          position += 14;
         });
+
+        // Добавляем дополнительный круг для слота начала стрелки
+        arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: 0, position: position, type: "startCircle"});
 
         var filter = {
           style: 'arrow',
@@ -370,17 +400,18 @@
         });
 
         // Создаём массив объектов с кружочками
-        let fPosition = 0
+        position = 0
         startArrows.forEach(function (startArrow){
-          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: startArrow.id, position: fPosition, type: "finishCircle"});
-          fPosition += 14;
+          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: startArrow.id, position: position, type: "finishCircle"});
+          position += 14;
         })
-      
+
+        // Добавляем дополнительный круг для слота окончания стрелки
+        arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: 0, position: position, type: "finishCircle"});
+
       });
 
-      
-      console.log("Всего было создано " + arrayCircles.length + " кружков.")
-      console.log(arrayCircles)
+      // console.log(arrayCircles)
     }
 
     function draw () {
@@ -412,120 +443,23 @@
                   ctx.textAlign = "center";
                   ctx.fillText(element.name, element.left+element.width/2, element.top+element.height/2);
 
-                  // var filter = {
-                  //   style: 'arrow',
-                  //   start: element.id
-                  // };
-
-                  // finishArrows = elements.filter(function(item) {
-                  //   for (var key in filter) {
-                  //     if (item[key] === undefined || item[key] != filter[key])
-                  //       return false;
-                  //   }
-                  //   return true;
-                  // });
-
-                  
-                  // finishArrows.forEach(function (finishArrow){
-                  //   arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, type: "startCircle"})
-                  // })
-                  
-                  
-
-                  // switch (finishArrows.length) {
-                  //   case 0:
-                  //     drawCircle(element.left+element.width/2, element.top+element.height);
-                  //     break;
-                  //   case 1:
-                  //     drawCircle(element.left+element.width/2 - 7, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 7, element.top+element.height);
-                  //     break;
-                  //   case 2:
-                  //     drawCircle(element.left+element.width/2 - 14, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 14, element.top+element.height);
-                  //     break;
-                  //   case 3:
-                  //     drawCircle(element.left+element.width/2 - 21, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 - 7, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 7, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 21, element.top+element.height);
-                  //     break;
-                  //   case 4:
-                  //     drawCircle(element.left+element.width/2 - 28, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 - 14, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 0, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 14, element.top+element.height);
-                  //     drawCircle(element.left+element.width/2 + 28, element.top+element.height);
-                  //     break;
-                  //   default:
-
-                  // }
-
-                  // var filter = {
-                  //   style: 'arrow',
-                  //   finish: element.id
-                  // };
-
-                  // startArrows = elements.filter(function(item) {
-                  //   for (var key in filter) {
-                  //     if (item[key] === undefined || item[key] != filter[key])
-                  //       return false;
-                  //   }
-                  //   return true;
-                  // });
-
-                  // // Создаём массив объектов с кружочками
-                  // startArrows.forEach(function (startArrow){
-                  //             arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, type: "finishCircle"})
-                  //           })
-
                   aC = arrayCircles.filter(item => item.elementId === element.id)
 
-                  f = 0;
-                  s = 0;
                   aC.forEach( function (item){
                     if (item.type === "finishCircle") {
-                      drawCircle(element.left+element.width/2+f, element.top);
-                      f += 14
+                      item.left = element.left+element.width/2+item.position
+                      item.top = element.top - 10
+                      drawCircle(item.left, item.top, blank=item.arrowId);
                     } else {
-                      drawCircle(element.left+element.width/2+s, element.top + element.height);
-                      s += 14
+                      item.left = element.left+element.width/2+item.position
+                      item.top = element.top + element.height + 10
+                      drawCircle(item.left, item.top, blank=item.arrowId);
                     }
                   })
-                  drawCircle(element.left+element.width/2+f, element.top);
-                  drawCircle(element.left+element.width/2+s, element.top + element.height);
-
-                  // switch (startArrows.length) {
-                  //   case 0:
-                  //     drawCircle(element.left+element.width/2, element.top);
-                  //     break;
-                  //   case 1:
-                  //     drawCircle(element.left+element.width/2 - 7, element.top);
-                  //     drawCircle(element.left+element.width/2 + 7, element.top);
-                  //     break;
-                  //   case 2:
-                  //     drawCircle(element.left+element.width/2 - 14, element.top);
-                  //     drawCircle(element.left+element.width/2, element.top);
-                  //     drawCircle(element.left+element.width/2 + 14, element.top);
-                  //     break;
-                  //   case 3:
-                  //     drawCircle(element.left+element.width/2 - 14, element.top);
-                  //     drawCircle(element.left+element.width/2 - 7, element.top);
-                  //     drawCircle(element.left+element.width/2 + 7, element.top);
-                  //     drawCircle(element.left+element.width/2 + 14, element.top);
-                  //     break;
-                  //   default:
-                  // }
-
-                  // console.log("У элемента "+ element.name + " начальных кругов " + startArrows.length + " и конечных кругов " + finishArrows.length)
 
                 } else if (element.style == 'arrow') {
-                  // ctx.fillStyle = element.color;
-                  // i += 1
+
                   ctx.beginPath();
-                  // ctx.strokeStyle = element.color; // цвет линии
-                  // ctx.lineWidth = 2; // толщина линии
 
                   var filter = {
                     style: 'arrow',
@@ -553,27 +487,6 @@
                     return true;
                   });
 
-
-                  // allElements = elements.filter(arElement => arElement.style === "rect");
-
-                  // console.log("Стрелка " + element.name + " с началом в " + element.start + " и окончанием в " + element.finish + 
-                    // ". Всего startRects " + startRects.length + " и finishRects " + finishRects.length + ". повторений: " + i)
-
-                  // if (startElements.length === 2) {
-                  //   if (finishElements.length === 1) {
-                  //     drawArrow(allElements, element.name, element.start, element.finish, -14, -7);
-                  //     drawArrow(allElements, element.name, element.start, element.finish, 0, -7);
-                  //   }
-                  // }
-
-                  // if ( (startElements.length === 2) && (finishElements.length === 1) ) {
-                  //     drawArrow(allElements, element.name, element.start, element.finish, -14, -7);
-                  //     // drawArrow(allElements, element.name, element.start, element.finish, 0, -7);
-                    
-                  // }
-
-                  // console.log("Стрелка " + element.name + " Вызвали 5")
-
                   var filter = {
                     elementId: Number(element.start),
                     type: "startCircle",
@@ -591,52 +504,42 @@
                   let circleStart = arrayCircles.filter(item => item.arrowId === element.id).find(item => item.type === "startCircle");
                   let circleFinish = arrayCircles.filter(item => item.arrowId === element.id).find(item => item.type === "finishCircle");
 
-                  // var aC = arrayCircles.filter(item => item.elementId === Number(element.start))
-                  // console.log(element.name + " стартовый кружок " + aC.length + " Смещение: " + circleStart.position + " / " + circleFinish.position)
-
-                  f = 0;
-                  // s = 0;
-                  // aC.forEach( function (item){
-                  //     drawArrow(element.name, element.start, element.finish, 0+f, 0+f);
-                  //     // console.log("Стрелка " + element.name )
-                  //     f += 14
-                  // })
                   drawArrow(element.name, element.start, element.finish, 0+circleStart.position, 0+circleFinish.position);
-                  // drawArrow(element.name, element.start, element.finish, 0, 0);
-
-
-                          
-                  // aC = arrayCircles.filter(item => item.elementId === Number(element.finish))
-
-                  // i = 0;
-                  // aC.forEach( function (item){
-                  //   if (item.type === "finishCircle") {
-                  //     drawArrow(element.name, element.start, element.finish, 0+i, 0+i);
-                  //     i += 14
-                  //   }
-                  // })
-
-   
 
                 }
             });
     }
 
-    function drawCircle(x, y) {
+    function drawCircle(x, y, blank=0) {
       // Круг под квадратом
       ctx.beginPath();
+      // ctx.save()
       ctx.fillStyle = 'white'
       ctx.strokeStyle = 'blue'
-      ctx.moveTo(x, y);
+      // ctx.moveTo(x, y);
       ctx.arc(x, y, 5, 0, 360, false);
       ctx.fill();
       ctx.stroke();
+
+      // Если это пустой круг, то рисуем на нём плюс
+      if (blank === 0) {
+        ctx.beginPath();
+        ctx.moveTo(x-3, y)
+        ctx.lineTo(x+3, y)
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x, y-3)
+        ctx.lineTo(x, y+3)
+        ctx.stroke();
+
+      }
+
     }
 
     function drawArrow (elementName, arrowStart, arrowFinish, positionStart=0, positionFinish=0) {
-      // console.log("Рисуем стрелку " + elementName)
-      // console.log("Массив arrayCircles " + arrayCircles.length)
-
+      ctx.beginPath();
+      ctx.save()
       startElement = elements.find(element => element.id === Number(arrowStart))
       finishElement = elements.find(element => element.id === Number(arrowFinish))
 
@@ -668,6 +571,7 @@
 	
 	    ctx.textBaseline = 'bottom';
       drawLabel(elementName, p1, p2 )
+      ctx.restore();
     }
 
     function drawLabel(text, p1, p2, alignment = 'center', padding = 0){
@@ -722,9 +626,7 @@
 
     var button = document.getElementById('addElement'); // действие при нажатии на кнопку Добавить
     button.addEventListener("click", function() {
-      // amount = elements.filter(arElement => arElement.style === 'rect');
       elements.push({
-      // id: amount.length + 1,
       id: elements.length + 1,
       name: document.getElementById('addName').value,
       style: 'rect',
@@ -734,9 +636,7 @@
       top: 100,
       left: 0
     })
-      arrayCircles.forEach( function (item){
-        console.log(item)
-      })
+      makeCirclesArray();
       window.requestAnimationFrame(draw);
     });
 
@@ -744,20 +644,20 @@
         // 1
         canvas = document.getElementById('tutorial'); // Получаем тэг Канвас
         canvas.addEventListener('mousedown', clickByRect);
+        canvas.addEventListener('mousedown', clickByBlankCircle);
         canvas.addEventListener('dblclick', clickTextEdit);
-        canvas.addEventListener('contextmenu', deleteElement);
+        // canvas.addEventListener('contextmenu', deleteElement);
         canvas.addEventListener('mousemove', moveRect);
-        canvas.addEventListener('mousemove', moveMouseOver);
-        // canvas.addEventListener('mousemove', moveMouseOut);
+        // canvas.addEventListener('mousemove', moveMouseOver);
         canvas.addEventListener('mouseup', releaseMouseButton);
 
         makeCirclesArray(); // Создаём массив с кружками для построения стрелок
-
 
         if (canvas.getContext) { // проверка
             ctx = canvas.getContext('2d');
             draw();
         }
+        console.log(arrayCircles)
     }
 
     initialization();
@@ -767,3 +667,4 @@
   {% endblock content %}
 
 
+// http://phrogz.net/tmp/canvas_rotated_text.html
