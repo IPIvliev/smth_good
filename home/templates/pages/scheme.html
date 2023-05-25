@@ -92,7 +92,7 @@
           color: 'black',
           width: 200,
           height: 100,
-          left: 620,
+          left: 640,
           top: 140,    
         },
         {
@@ -102,12 +102,12 @@
           color: 'pink',
           width: 200,
           height: 100,
-          left: 620,
+          left: 640,
           top: 340,    
         },
         {
             id: 7,
-            name: 'arrow1',
+            name: 'Отчёт о продажах',
             style: 'arrow',
             start: '1',
             finish: '2',
@@ -115,7 +115,7 @@
         },
         {
           id: 8,
-            name: 'arrow2',
+            name: 'Остаток на складе',
             style: 'arrow',
             start: '1',
             finish: '2',
@@ -350,8 +350,10 @@
           return true;
         });
 
+        let sPosition = 0
         finishArrows.forEach(function (finishArrow){
-          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: finishArrow.id, type: "startCircle"})
+          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: finishArrow.id, position: sPosition, type: "startCircle"});
+          sPosition += 14;
         });
 
         var filter = {
@@ -368,8 +370,10 @@
         });
 
         // Создаём массив объектов с кружочками
+        let fPosition = 0
         startArrows.forEach(function (startArrow){
-          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, type: "finishCircle"})
+          arrayCircles.push({id: arrayCircles.length+1, elementId: element.id, arrowId: startArrow.id, position: fPosition, type: "finishCircle"});
+          fPosition += 14;
         })
       
       });
@@ -572,28 +576,32 @@
 
                   var filter = {
                     elementId: Number(element.start),
-                    type: "startCircle"
+                    type: "startCircle",
+                    arrowId: element.id
                   };
 
-                  aC = arrayCircles.filter(function(item) {
+                  aC = arrayCircles.find(function(item) {
                     for (var key in filter) {
                       if (item[key] === undefined || item[key] != filter[key])
                         return false;
                     }
-                    return true;
+                    return item;
                   });
 
-                  // aC = arrayCircles.filter(item => item.elementId === Number(element.start))
-                  console.log(element.name + " стартовый кружок " + aC.length)
+                  let circleStart = arrayCircles.filter(item => item.arrowId === element.id).find(item => item.type === "startCircle");
+                  let circleFinish = arrayCircles.filter(item => item.arrowId === element.id).find(item => item.type === "finishCircle");
 
-                  // f = 0;
+                  // var aC = arrayCircles.filter(item => item.elementId === Number(element.start))
+                  // console.log(element.name + " стартовый кружок " + aC.length + " Смещение: " + circleStart.position + " / " + circleFinish.position)
+
+                  f = 0;
                   // s = 0;
                   // aC.forEach( function (item){
                   //     drawArrow(element.name, element.start, element.finish, 0+f, 0+f);
                   //     // console.log("Стрелка " + element.name )
                   //     f += 14
                   // })
-                  drawArrow(element.name, element.start, element.finish, 0+f, 0+f);
+                  drawArrow(element.name, element.start, element.finish, 0+circleStart.position, 0+circleFinish.position);
                   // drawArrow(element.name, element.start, element.finish, 0, 0);
 
 
@@ -650,15 +658,57 @@
       ctx.moveTo(tox, toy);
       ctx.lineTo(tox - 10 * Math.cos(angle + Math.PI / 6), toy - 10 * Math.sin(angle + Math.PI / 6));
 
-      
-      ctx.moveTo(tox, toy);
       ctx.stroke();
+
       ctx.font = "italic 8pt Arial";
       ctx.fillStyle = 'black';
-      ctx.textBaseline = 'middle';
-      ctx.textAlign = "center";
-      ctx.fillText(elementName, tox+positionFinish*3, toy);
-      // console.log("Нарисовали стрелку " + elementName)
+
+      var p1 = {x:fromx,y:fromy};
+	    var p2 = {x:tox,y:toy};	
+	
+	    ctx.textBaseline = 'bottom';
+      drawLabel(elementName, p1, p2 )
+    }
+
+    function drawLabel(text, p1, p2, alignment = 'center', padding = 0){
+      
+      var dx = p2.x - p1.x;
+      var dy = p2.y - p1.y;
+      var len = Math.sqrt(dx*dx+dy*dy);
+      var avail = len - 2*padding;
+      
+      var textToDraw = text;
+      if (ctx.measureText && ctx.measureText(textToDraw).width > avail){
+        while (textToDraw && ctx.measureText(textToDraw+"…").width > avail) textToDraw = textToDraw.slice(0,-1);
+        textToDraw += "…";
+      }
+
+      // Текст всегда рядом с линией
+      var angle = Math.atan2(dy,dx);
+      if (angle < -Math.PI/2 || angle > Math.PI/2){
+        var p = p1;
+        p1 = p2;
+        p2 = p;
+        dx *= -1;
+        dy *= -1;
+        angle -= Math.PI;
+      }
+      
+      var p, pad;
+      if (alignment=='center'){
+        p = p1;
+        pad = 1/2;
+      } else {
+        var left = alignment=='left';
+        p = left ? p1 : p2;
+        pad = padding / len * (left ? 1 : -1);
+      }
+      ctx.save();
+      ctx.textAlign = alignment;
+      ctx.translate(p.x+dx*pad,p.y+dy*pad);
+      ctx.rotate(angle);
+      ctx.fillText(textToDraw,0,0);
+      ctx.restore();
     }
 
     function getRandomColor() {
