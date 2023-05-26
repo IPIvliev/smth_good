@@ -18,6 +18,23 @@
           <div class="card-header pb-0">
             <h6>Схема предприятия</h6>
           </div>
+          <div class="modalBackground">
+            <div class="modalActive">
+                <div class="modalClose">
+                    X
+                </div>
+                <div class="modalWindow">
+                  <form>
+                    <div class="form-group">
+                      <label for="exampleFormControlInput1">Наименование</label>
+                      <input type="text" class="form-control" id="elementName" placeholder="name@example.com">
+                    </div>
+                  </form>
+                  <button type="button" class="btn btn-success">Сохранить</button>
+                  <button type="button" class="btn btn-secondary" id="closeElementWindow">Отменить</button>
+                </div>
+            </div>
+          </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0" id="ex2-common-parent">
               	
@@ -28,6 +45,7 @@
               <br>
               <button id="addElement">Добавить элемент</button>
               <input id="addName"></input>
+
             </div>
 
           </div>
@@ -206,8 +224,8 @@
     //   };
 
     function releaseMouseButton () { // отпускаем мышку
-        // 5
-        elementClick = null;
+        
+        elementClick = null; // Убираем квадрат из памяти
 
         if (circleClick != null) {
 
@@ -218,9 +236,6 @@
           x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
           y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
 
-          console.log("Отжал кнопку мыши" + x_click);
-          console.log(y_click);
-          // elementClick = null;
           circleFinish = null;
 
           arrayCircles.filter(item => item.arrowId === 0).filter(item => item.type === "finishCircle").forEach ( function (circle) {
@@ -233,14 +248,6 @@
                   (y_click > circle.top-10) && (y_click < y_final) )
               {
                 circleFinish = circle;
-                // ctx.lineTo(event.offsetX,event.offsetY);
-
-                console.log("Точка окончания " + circleFinish);
-              } else {
-                // alert("No finish point")
-                // circleFinish = null;
-                // console.log("Точка окончания" + circleFinish);
-                // return false;
               }
           });
         
@@ -286,18 +293,19 @@
         
         // console.log(event.clientX)
         // ctx.moveTo(circleClick.left, circleClick.top)
-        // ctx.lineTo(event.clientX, event.clientY)
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        // ctx.lineTo(x_click, y_click)
         // ctx.stroke();
-        // let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
-        // x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
-        // y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+
         // desplX = x_click - x_before;
         // desplY = y_click - y_before;
         // elementClick.left = elementClick.left + desplX;
         // elementClick.top = elementClick.top + desplY;
         // x_before = x_click;
         // y_before = y_click;
-        // window.requestAnimationFrame(draw);
+        window.requestAnimationFrame(draw);
     }
 
     function clickByBlankCircle (event) { // отслеживаем клик по постому кружку для отрисовки новой стрелки
@@ -327,27 +335,12 @@
               ctx.moveTo(x_click,y_click)
               
               circleClick = circle;
-              // ctx.lineTo(event.offsetX,event.offsetY);
-              
 
               console.log(circle.arrowId);
             }
             
         });
-      // this.onmousemove = function(e){
-      //   console.log("df")
-      //   ctx.lineTo(e.offsetX,e.offsetY);
-      //   ctx.stroke()
-      //   x = e.offsetX;
-      //   y = e.offsetY;
-        
-      // };
 
-      // canvas.onclick = function(e){
-      //   p1.x = e.offsetX;
-      //   p1.y = e.offsetY;
-      //   redraw();
-      // };
     }
 
     function clickByRect (event) { // отслеживаем клик по элементу
@@ -382,6 +375,7 @@
 
     function clickTextEdit () { // Добавляем или меняем название на элементе
         // 3
+        openElementWindow();
         let x_click;
         let y_click;
         let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
@@ -392,7 +386,7 @@
 
         elementClick = null;
 
-        var text = document.getElementById('addName'); // действие при нажатии на кнопку Добавить
+        // var text = document.getElementById('addName'); // действие при нажатии на кнопку Добавить
 
         elements.forEach ( function (element) {
 
@@ -403,15 +397,17 @@
             if ( (x_click > element.left) && (x_click < x_final) && 
                 (y_click > element.top) && (y_click < y_final) )
             {
-                ctx.clearRect(element.left + 10,element.top + 10 , element.width -20 ,element.height-20);
-                ctx.font = "italic 18pt Arial";
-                ctx.fillStyle = 'black';
-                ctx.textBaseline = 'middle';
-                ctx.textAlign = "center";
-                ctx.fillText(text.value, element.left+element.width/2, element.top+element.height/2);
+                // ctx.clearRect(element.left + 10,element.top + 10 , element.width -20 ,element.height-20);
+                // ctx.font = "italic 18pt Arial";
+                // ctx.fillStyle = 'black';
+                // ctx.textBaseline = 'middle';
+                // ctx.textAlign = "center";
+                // ctx.fillText(text.value, element.left+element.width/2, element.top+element.height/2);
                 
-                element.name = text.value
-                document.getElementById('addName').value = ""
+                // element.name = text.value
+                document.getElementById('elementName').value = element.name; // действие при нажатии на кнопку Добавить
+
+                // document.getElementById('addName').value = ""
                 window.requestAnimationFrame(draw);
             }
             
@@ -517,6 +513,17 @@
             let height = infoPos.height; // получаем ширину высоту
             ctx.clearRect(0, 0, width, height); // стираем прошлый кадр
             ctx.beginPath();
+            ctx.strokeStyle = 'blue'
+
+            if (circleClick != null) {
+              
+              ctx.moveTo(circleClick.left, circleClick.top)
+              // x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+              // y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+              ctx.lineTo(x_click, y_click)
+              console.log(circleClick.left + " * " + circleClick.top + " / " + x_click, y_click)
+              ctx.stroke();
+            }
 
             i = 0
             elements.forEach (function(element){ // отрисовка элемента
@@ -768,7 +775,116 @@
 
     initialization();
 
+
+    // Работа с модальным окном
+    // устанавливаем триггер для модального окна (название можно изменить)
+    const modalTrigger = document.getElementsByClassName("trigger")[0];
+
+    // получаем ширину отображенного содержимого и толщину ползунка прокрутки
+    const windowInnerWidth = document.documentElement.clientWidth;
+    const scrollbarWidth = parseInt(window.innerWidth) - parseInt(document.documentElement.clientWidth);
+
+    // привязываем необходимые элементы
+    const bodyElementHTML = document.getElementsByTagName("body")[0];
+    const modalBackground = document.getElementsByClassName("modalBackground")[0];
+    const modalClose = document.getElementsByClassName("modalClose")[0];
+    const modalActive = document.getElementsByClassName("modalActive")[0];
+    const elementWindowClose = document.getElementById("closeElementWindow");
+
+    // функция для корректировки положения body при появлении ползунка прокрутки
+    function bodyMargin() {
+        bodyElementHTML.style.marginRight = "-" + scrollbarWidth + "px";
+    }
+
+    // при длинной странице - корректируем сразу
+    bodyMargin();
+
+    function openElementWindow() {
+      // делаем модальное окно видимым
+      modalBackground.style.display = "block";
+
+      // если размер экрана больше 1366 пикселей (т.е. на мониторе может появиться ползунок)
+      if (windowInnerWidth >= 1366) {
+          bodyMargin();
+      }
+
+      // позиционируем наше окно по середине, где 175 - половина ширины модального окна
+      modalActive.style.left = "calc(50% - " + (175 - scrollbarWidth / 2) + "px)";
+    };
+
+    // нажатие на крестик закрытия модального окна
+      modalClose.addEventListener("click", function () {
+          modalBackground.style.display = "none";
+          if (windowInnerWidth >= 1366) {
+              bodyMargin();
+          }
+      });
+    // // нажатие на крестик закрытия модального окна
+    elementWindowClose.addEventListener("click", function () {
+      modalBackground.style.display = "none";
+      if (windowInnerWidth >= 1366) {
+          bodyMargin();
+      }
+      });
+    // закрытие модального окна на зону вне окна, т.е. на фон
+    modalBackground.addEventListener("click", function (event) {
+        if (event.target === modalBackground) {
+            modalBackground.style.display = "none";
+            if (windowInnerWidth >= 1366) {
+                bodyMargin();
+            }
+        }
+    });
 </script>
+
+<style>
+  body {
+    overflow-x: hidden;
+  }
+  /* фон нашего модального окна */
+  .modalBackground {
+      display: none;
+      background: rgba(0, 0, 0, 0.8);
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      /* указываем z-индекс для корректного наслаивания */
+      z-index: 2;
+  }
+  /* позиционирование самого модального окна */
+  .modalActive {
+      position: absolute;
+      width: 350px;
+      height: 495px;
+      top: calc(25% - 175px);
+      left: calc(25% - 175px);
+      border-radius: 10px;
+      background-color: rgb(241, 241, 241);
+      cursor: default;
+      padding: 40px 20px;
+  }
+  .modalClose {
+    font-family: var(--font-regular);
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+  /* сама картинка кнопочки закрытия */
+  .modalClose img {
+      margin: 3px;
+      width: 24px;
+      height: 24px;
+  }
+  /* делаем позиционирование внутренних элементов относительно модального окна */
+  .modalWindow {
+      position: relative;
+  }
+</style>
 
   {% endblock content %}
 
