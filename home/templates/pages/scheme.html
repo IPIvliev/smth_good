@@ -30,7 +30,7 @@
                       <input type="text" class="form-control" id="elementName" placeholder="name@example.com">
                     </div>
                   </form>
-                  <button type="button" class="btn btn-success">Сохранить</button>
+                  <button type="button" class="btn btn-success" id="saveElementValues">Сохранить</button>
                   <button type="button" class="btn btn-secondary" id="closeElementWindow">Отменить</button>
                 </div>
             </div>
@@ -407,11 +407,26 @@
                 // element.name = text.value
                 document.getElementById('elementName').value = element.name; // действие при нажатии на кнопку Добавить
 
+                // changeElementValues(element);
+
                 // document.getElementById('addName').value = ""
-                window.requestAnimationFrame(draw);
+                
+
+                // Сохраняем новые значения элемента
+                buttonSaveElementValues.addEventListener("click", function () {
+                      changeElementValues(element);
+                      
+                      modalBackground.style.display = "none";
+                });
             }
             
         });
+    }
+
+    function changeElementValues (element){
+      element.name = document.getElementById('elementName').value
+      // element = null;
+      window.requestAnimationFrame(draw);
     }
 
     function deleteElement () {
@@ -789,7 +804,9 @@
     const modalBackground = document.getElementsByClassName("modalBackground")[0];
     const modalClose = document.getElementsByClassName("modalClose")[0];
     const modalActive = document.getElementsByClassName("modalActive")[0];
+    const buttonSaveElementValues = document.getElementById("saveElementValues");
     const elementWindowClose = document.getElementById("closeElementWindow");
+
 
     // функция для корректировки положения body при появлении ползунка прокрутки
     function bodyMargin() {
@@ -811,6 +828,8 @@
       // позиционируем наше окно по середине, где 175 - половина ширины модального окна
       modalActive.style.left = "calc(50% - " + (175 - scrollbarWidth / 2) + "px)";
     };
+
+
 
     // нажатие на крестик закрытия модального окна
       modalClose.addEventListener("click", function () {
