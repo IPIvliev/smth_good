@@ -17,6 +17,8 @@
         <div class="card mb-4" style="height: 1040px;">
           <div class="card-header pb-0">
             <h6>Схема предприятия</h6>
+            <br>
+            <button type="button" class="btn btn-success" id="addElement">Добавить элемент</button>
           </div>
           <div class="modalBackground">
             <div class="modalActive">
@@ -32,19 +34,19 @@
                   </form>
                   <button type="button" class="btn btn-success" id="saveElementValues">Сохранить</button>
                   <button type="button" class="btn btn-secondary" id="closeElementWindow">Отменить</button>
+                  <br>
+                  <button type="button" class="btn btn-danger" id="deleteElement">Удалить</button>
                 </div>
             </div>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0" id="ex2-common-parent">
               	
-              <canvas id="tutorial" width="1480" height="560" style="border: 1px solid #000000; margin-left: 20px;">
+              <canvas id="tutorial" width="1480" height="720" style="border: 1px solid #000000; margin-left: 20px;">
                 Update your browser to support HTML5 Canvas
                 
               </canvas>
-              <br>
-              <button id="addElement">Добавить элемент</button>
-              <input id="addName"></input>
+
 
             </div>
 
@@ -63,6 +65,9 @@
     let x_before;
     let y_before;
     let arrayCircles = [];
+    const buttonSaveElementValues = document.getElementById("saveElementValues");
+    const buttonDeleteElementValues = document.getElementById("deleteElement");
+    let changedElementId = null;
     let elements = [ // элементы для отрисовки
         {
           id: 1,
@@ -255,13 +260,13 @@
           if (circleFinish != null) {
             elements.push({
               id: elements.length + 1,
-              name: 'arrow',
+              name: 'Новое соглашение',
               style: 'arrow',
               start: circleClick.elementId.toString(),
               finish: circleFinish.elementId,
               color: 'blue',
             });
-            console.log(elements)
+            
           }
 
           makeCirclesArray(); // Обновляем массив кружков
@@ -270,6 +275,11 @@
         
         document.body.style.cursor = 'default';
         window.requestAnimationFrame(draw);
+
+        // openElementWindow();
+        // arrow = elements.find(item => item.id === element.arrowId)
+                // document.getElementById('elementName').value = element.name; // действие при нажатии на кнопку Добавить
+                // changedElementId = arrow.id;
     }
 
     function moveRect (event) { // постоянно отрисовываем при перемещении
@@ -290,21 +300,10 @@
     function moveArrow (event) { // рисуем новую стрелку
         // 4
         if (circleClick == null) {return}
-        
-        // console.log(event.clientX)
-        // ctx.moveTo(circleClick.left, circleClick.top)
         let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
         x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
         y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
-        // ctx.lineTo(x_click, y_click)
-        // ctx.stroke();
 
-        // desplX = x_click - x_before;
-        // desplY = y_click - y_before;
-        // elementClick.left = elementClick.left + desplX;
-        // elementClick.top = elementClick.top + desplY;
-        // x_before = x_click;
-        // y_before = y_click;
         window.requestAnimationFrame(draw);
     }
 
@@ -316,10 +315,6 @@
         let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
         x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
         y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
-
-        console.log(x_click);
-        console.log(y_click);
-        // elementClick = null;
 
         arrayCircles.filter(item => item.arrowId === 0).filter(item => item.type === "startCircle").forEach ( function (circle) {
 
@@ -335,8 +330,6 @@
               ctx.moveTo(x_click,y_click)
               
               circleClick = circle;
-
-              console.log(circle.arrowId);
             }
             
         });
@@ -352,8 +345,7 @@
         y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
         x_before = x_click;
         y_before = y_click;
-        console.log(x_click);
-        console.log(y_click);
+
         elementClick = null;
 
         elements.forEach ( function (element) {
@@ -366,16 +358,14 @@
                 (y_click > element.top) && (y_click < y_final) )
             {
                 elementClick = element;
-                
-                console.log(element.name);
             }
             
         });
     }
 
-    function clickTextEdit () { // Добавляем или меняем название на элементе
+    function clickElementEdit () { // Добавляем или меняем название на элементе
         // 3
-        openElementWindow();
+        
         let x_click;
         let y_click;
         let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
@@ -386,8 +376,6 @@
 
         elementClick = null;
 
-        // var text = document.getElementById('addName'); // действие при нажатии на кнопку Добавить
-
         elements.forEach ( function (element) {
 
             x_final = element.left + element.width; // правый край элемента по x
@@ -397,76 +385,89 @@
             if ( (x_click > element.left) && (x_click < x_final) && 
                 (y_click > element.top) && (y_click < y_final) )
             {
-                // ctx.clearRect(element.left + 10,element.top + 10 , element.width -20 ,element.height-20);
-                // ctx.font = "italic 18pt Arial";
-                // ctx.fillStyle = 'black';
-                // ctx.textBaseline = 'middle';
-                // ctx.textAlign = "center";
-                // ctx.fillText(text.value, element.left+element.width/2, element.top+element.height/2);
-                
-                // element.name = text.value
-                document.getElementById('elementName').value = element.name; // действие при нажатии на кнопку Добавить
-
-                // changeElementValues(element);
-
-                // document.getElementById('addName').value = ""
-                
-
-                // Сохраняем новые значения элемента
-                buttonSaveElementValues.addEventListener("click", function () {
-                      changeElementValues(element);
-                      
-                      modalBackground.style.display = "none";
-                });
+                openElementWindow();
+                document.getElementById('elementName').value = element.name; // Имя элемента
+                changedElementId = element.id;
             }
             
         });
     }
-
-    function changeElementValues (element){
+    
+    function changeElementValues (){
+      
+      if (changedElementId === null) {return}
+      element = elements.find(item => item.id === changedElementId)
+      console.log(element.name)
       element.name = document.getElementById('elementName').value
-      // element = null;
       window.requestAnimationFrame(draw);
+      modalBackground.style.display = "none";
+      changedElementId = null
     }
+
+    function clickArrowEdit () { // Добавляем или меняем название на элементе
+        // 3
+        
+        let x_click;
+        let y_click;
+        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
+        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
+        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
+        x_before = x_click;
+        y_before = y_click;
+
+        elementClick = null;
+
+        arrayCircles.forEach ( function (element) {
+
+            x_final = element.left + 10; // правый край элемента по x
+            y_final = element.top + 10; // низ края элемента по y
+            
+
+            if ( (x_click > element.left-5) && (x_click < x_final) && 
+                (y_click > element.top-5) && (y_click < y_final) )
+            {
+                console.log(element.arrowId)
+                openElementWindow();
+                arrow = elements.find(item => item.id === element.arrowId)
+                document.getElementById('elementName').value = arrow.name; // действие при нажатии на кнопку Добавить
+                changedElementId = arrow.id;
+            }
+            
+        });
+    }  
 
     function deleteElement () {
-        let x_click;
-        let y_click;
-        let infoPos = canvas.getBoundingClientRect(); // возвращает размер элемента и его позицию относительно viewport 
-        x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
-        y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
-        x_before = x_click;
-        y_before = y_click;
+      if (changedElementId === null) {return}
+      element = elements.find(item => item.id === changedElementId)
+      
+      arrows = elements.filter(item => item.start === element.id.toString())
+      arrows.map (function (item) {
+        index = elements.indexOf(item);
+        elements.splice(index, 1);
+      })
 
-        elementClick = null;
+      arrows = elements.filter(item => item.finish === element.id.toString())
+      arrows.map (function (item) {
+        index = elements.indexOf(item);
+        elements.splice(index, 1);
+      })
 
-        var text = document.getElementById('addName'); // действие при нажатии на кнопку Добавить
+      makeCirclesArray()
 
-        elements.forEach ( function (element) {
+      index = elements.indexOf(element);
+      elements.splice(index, 1);
 
-            x_final = element.left + element.width; // правый край элемента по x
-            y_final = element.top + element.height; // низ края элемента по y
-            
+      changedElementId = null;
 
-            if ( (x_click > element.left) && (x_click < x_final) && 
-                (y_click > element.top) && (y_click < y_final) )
-            {
-
-              var index = elements.map(x => {
-                return x.id;
-              }).indexOf(element.id);
-
-              elements.splice(index, 1);
-              window.requestAnimationFrame(draw);
-            }
-          });
+      window.requestAnimationFrame(draw);
+      modalBackground.style.display = "none";
       }
 
     function makeCirclesArray () {
       // переопределяем массив с кружками
       arrayCircles.length = 0;
 
-      rectElements = finishArrows = elements.filter(item => item.style === "rect")
+      rectElements = elements.filter(item => item.style === "rect")
 
       rectElements.forEach (function(element){ // отрисовка элемента
 
@@ -533,10 +534,7 @@
             if (circleClick != null) {
               
               ctx.moveTo(circleClick.left, circleClick.top)
-              // x_click = event.clientX - infoPos.left; // пиксель по x внутри тэга canvas на который нажали
-              // y_click = event.clientY - infoPos.top; // пиксель по y внутри тэга canvas на который нажали
               ctx.lineTo(x_click, y_click)
-              console.log(circleClick.left + " * " + circleClick.top + " / " + x_click, y_click)
               ctx.stroke();
             }
 
@@ -566,10 +564,18 @@
                     if (item.type === "finishCircle") {
                       item.left = element.left+element.width/2+item.position
                       item.top = element.top - 10
+
+                      // ac.left = item.left;
+                      // ac.top = item.top;
+
                       drawCircle(item.left, item.top, blank=item.arrowId);
                     } else {
                       item.left = element.left+element.width/2+item.position
                       item.top = element.top + element.height + 10
+
+                      // ac.left = item.left;
+                      // ac.top = item.top;
+
                       drawCircle(item.left, item.top, blank=item.arrowId);
                     }
                   })
@@ -753,7 +759,7 @@
     button.addEventListener("click", function() {
       elements.push({
       id: elements.length + 1,
-      name: document.getElementById('addName').value,
+      name: "Новый участник",
       style: 'rect',
       color: getRandomColor(),
       width: 200,
@@ -762,8 +768,8 @@
       left: 0
     })
       makeCirclesArray();
-      document.getElementById('addName').value = "";
       window.requestAnimationFrame(draw);
+      console.log(elements)
     });
 
     function initialization() { // точка входа
@@ -772,12 +778,19 @@
         canvas.addEventListener('mousedown', clickByRect);
         canvas.addEventListener('mousedown', clickByBlankCircle);
         // canvas.addEventListener('mousedown', clickByBlankCircle).addEventListener('mousemove', );
-        canvas.addEventListener('dblclick', clickTextEdit);
+        canvas.addEventListener('dblclick', clickElementEdit);
+        canvas.addEventListener('dblclick', clickArrowEdit);
         // canvas.addEventListener('contextmenu', deleteElement);
         canvas.addEventListener('mousemove', moveRect);
         canvas.addEventListener('mousemove', moveArrow);
         // canvas.addEventListener('mousemove', moveMouseOver);
         canvas.addEventListener('mouseup', releaseMouseButton);
+
+        // Сохраняем новые значения элемента
+        buttonSaveElementValues.addEventListener("click", changeElementValues)
+
+        // Удаляем элемент
+        buttonDeleteElementValues.addEventListener("click", deleteElement)
 
         makeCirclesArray(); // Создаём массив с кружками для построения стрелок
 
@@ -804,7 +817,6 @@
     const modalBackground = document.getElementsByClassName("modalBackground")[0];
     const modalClose = document.getElementsByClassName("modalClose")[0];
     const modalActive = document.getElementsByClassName("modalActive")[0];
-    const buttonSaveElementValues = document.getElementById("saveElementValues");
     const elementWindowClose = document.getElementById("closeElementWindow");
 
 
@@ -846,14 +858,14 @@
       }
       });
     // закрытие модального окна на зону вне окна, т.е. на фон
-    modalBackground.addEventListener("click", function (event) {
-        if (event.target === modalBackground) {
-            modalBackground.style.display = "none";
-            if (windowInnerWidth >= 1366) {
-                bodyMargin();
-            }
-        }
-    });
+    // modalBackground.addEventListener("click", function (event) {
+    //     if (event.target === modalBackground) {
+    //         modalBackground.style.display = "none";
+    //         if (windowInnerWidth >= 1366) {
+    //             bodyMargin();
+    //         }
+    //     }
+    // });
 </script>
 
 <style>
@@ -867,7 +879,7 @@
       position: fixed;
       width: 100%;
       height: 100%;
-      cursor: pointer;
+      /* cursor: pointer; */
       /* указываем z-индекс для корректного наслаивания */
       z-index: 2;
   }
